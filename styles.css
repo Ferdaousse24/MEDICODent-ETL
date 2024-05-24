@@ -1,0 +1,98 @@
+body {
+    background-image:url("back.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+h2{
+    margin:5%;
+    padding:5%;
+}
+
+.container {
+    width: 50%;
+    max-width: 400px;
+    padding: 0px;
+}
+
+.card {
+    border-radius: 15px;
+    text-align: center;
+    border: none;
+    background-color:transparent;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: #000000;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.form-control {
+    text-align: center;
+    border: 1px solid #ced4da;
+    border-radius: 10px;
+    padding: 15px;
+    font-size: 1.2rem;
+}
+
+.input-group-text {
+    text-align: center;
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+    cursor: pointer;
+}
+
+
+.btn-primary {
+    text-align: center;
+    background-color: #28a745;
+    border-color: #28a745;
+    padding: 15px;
+    font-size: 1.2rem;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    text-align: center;
+    background-color: #218838;
+    border-color: #218838;
+}
+
+.progress {
+    text-align: center;
+    height: 30px;
+    border-radius: 10px;
+    margin-top: 20px;
+    overflow: hidden;
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    text-align: center;
+    color: white;
+    text-align: center;
+    line-height: 30px;
+    transition: width 0.3s ease;
+}
+.uploadButton {
+    text-align: center;
+}
+
+#uploadStatus {
+    margin-top: 20px;
+    font-weight: bold;
+    color: #28a745;
+    font-size: 1.2rem;
+}
+
+
