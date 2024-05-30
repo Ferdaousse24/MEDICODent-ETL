@@ -41,3 +41,7 @@ Nous accueillons les contributions ! Veuillez suivre ces étapes :
 3. Commitez vos modifications (`git commit -am 'Ajout d'une fonctionnalité'`).
 4. Pushez vers la branche (`git push origin feature/votre-fonctionnalite`).
 5. Créez une nouvelle Pull Request.
+
+## Commande pour lancer l'application
+
+`python app.py`

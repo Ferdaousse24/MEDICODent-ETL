@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block content %}
+  <div class="text-center mb-4">
+    <h1>Bienvenue sur le portail MEDICODent-ETL</h1>
+    <h3 class="text-muted">Scénarios d'usage du portail MEDICODent-ETL</h3>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <img src="{{ url_for('static', filename='image.png') }}" alt="Scénarios d'usage du portail MEDICODent-ETL" class="img-fluid rounded">
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title">Fonctionnalités du site</h2>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <h5><strong>Importer fichier xlsx :</strong></h5>
+              <p>Permet aux utilisateurs d'importer des fichiers Excel pour traitement.</p>
+            </li>
+            <li class="list-group-item">
+              <h5><strong>Exporter fichier csv :</strong></h5>
+              <p>Génère et exporte des fichiers CSV à partir des données importées.</p>
+            </li>
+            <li class="list-group-item">
+              <h5><strong>Visualiser les tables :</strong></h5>
+              <p>Affiche les tables générées sous forme de liens cliquables pour faciliter la visualisation.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
