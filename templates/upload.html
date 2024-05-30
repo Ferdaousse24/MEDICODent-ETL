@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Excel File{% endblock %}
+
+{% block content %}
+  <div class="form-container">
+    <h1 class="text-center">Upload Excel File</h1>
+    <form action="{{ url_for('main.upload_file') }}" method="post" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="file">Choisir un fichier</label>
+        <div class="custom-file">
+          <input type="file" class="custom-file-input" id="file" name="file">
+          <label class="custom-file-label" for="file">Aucun fichier choisi</label>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Upload</button>
+    </form>
+  </div>
+{% endblock %}
