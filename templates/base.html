@@ -38,14 +38,35 @@
           <li class="nav-item">
             <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{{ url_for('main.index') }}">Accueil</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.path == '/upload' %}active{% endif %}" href="{{ url_for('main.upload_file') }}">Importer fichier</a>
+          </li>
         </ul>
       </div>
     </nav>
     <div class="container mt-4">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div>
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}" role="alert">
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
       {% block content %}{% endblock %}
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      // Custom file input label update
+      $('.custom-file-input').on('change', function() {
+        var fileName = $(this).val().split('\\').pop();
+        $(this).next('.custom-file-label').addClass("selected").html(fileName);
+      });
+    </script>
   </body>
 </html>
