@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, send_from_directory
 from werkzeug.utils import secure_filename
 import os
-from utils import allowed_file, check_file_exists, generate_type_patient_csv, clear_tables, insert_csv_to_db, generate_type_paiement_csv
+from utils import allowed_file, check_file_exists, generate_type_patient_csv, clear_tables, insert_csv_to_db, generate_type_paiement_csv, generate_type_jour_csv
 import pandas as pd
 
 main = Blueprint('main', __name__)
@@ -10,9 +10,11 @@ main = Blueprint('main', __name__)
 def index():
     file_exists_type_patient = check_file_exists('bd_medical_table_type_patient.csv')
     file_exists_type_paiement = check_file_exists('bd_medical_table_type_paiement.csv')
+    file_exists_type_jour = check_file_exists('bd_medical_table_type_jour.csv')
     return render_template('index.html', 
                            file_exists_type_patient=file_exists_type_patient, 
-                           file_exists_type_paiement=file_exists_type_paiement)
+                           file_exists_type_paiement=file_exists_type_paiement,
+                           file_exists_type_jour=file_exists_type_jour)
 
 @main.route('/upload', methods=['GET', 'POST'])
 def upload_file():
@@ -38,6 +40,7 @@ def upload_file():
                 # Génération des fichiers CSV
                 generate_type_patient_csv(filepath, current_app.config['UPLOAD_FOLDER_OUT'])
                 generate_type_paiement_csv(filepath, current_app.config['UPLOAD_FOLDER_OUT'])
+                generate_type_jour_csv(current_app.config['UPLOAD_FOLDER_OUT'])
                 
                 # Vider les tables avant de charger les nouvelles données
                 clear_tables()
@@ -45,6 +48,7 @@ def upload_file():
                 # Insertion des données dans la base de données
                 insert_csv_to_db(os.path.join(current_app.config['UPLOAD_FOLDER_OUT'], 'bd_medical_table_type_patient.csv'), 'table_type_patient')
                 insert_csv_to_db(os.path.join(current_app.config['UPLOAD_FOLDER_OUT'], 'bd_medical_table_type_paiement.csv'), 'table_type_paiement')
+                insert_csv_to_db(os.path.join(current_app.config['UPLOAD_FOLDER_OUT'], 'bd_medical_table_type_jour.csv'), 'table_type_jour', column_mapping={'id_jour': 'id_t_jour'})
                 
                 # Message de réussite
                 flash('Fichiers téléchargés avec succès, CSV générés et données insérées dans la base de données')
@@ -60,9 +64,11 @@ def upload_file():
     #request.method == 'GET'
     file_exists_type_patient = check_file_exists('bd_medical_table_type_patient.csv')
     file_exists_type_paiement = check_file_exists('bd_medical_table_type_paiement.csv')
+    file_exists_type_jour=check_file_exists('bd_medical_table_type_jour.csv')
     return render_template('upload.html', 
                            file_exists_type_patient=file_exists_type_patient, 
-                           file_exists_type_paiement=file_exists_type_paiement)
+                           file_exists_type_paiement=file_exists_type_paiement,
+                           file_exists_type_jour=file_exists_type_jour)
                           
 @main.route('/download/<filename>')
 def download_file(filename):
@@ -76,7 +82,8 @@ def type_patient():
         table_html = df.to_html(classes='table table-striped table-bordered', index=False)
         return render_template('type_patient.html', table=table_html, 
                                file_exists_type_patient=True, 
-                               file_exists_type_paiement=check_file_exists('bd_medical_table_type_paiement.csv'))
+                               file_exists_type_paiement=check_file_exists('bd_medical_table_type_paiement.csv'),
+                               file_exists_type_jour=check_file_exists('bd_medical_table_type_jour.csv'))
     except Exception as e:
         flash(f'Une erreur est survenue: {e}', 'danger')
         return redirect(url_for('main.index'))
@@ -89,7 +96,22 @@ def type_paiement():
         table_html = df.to_html(classes='table table-striped table-bordered', index=False)
         return render_template('type_paiement.html', table=table_html, 
                                file_exists_type_patient=check_file_exists('bd_medical_table_type_patient.csv'), 
-                               file_exists_type_paiement=True)
+                               file_exists_type_paiement=True,
+                               file_exists_type_jour=check_file_exists('bd_medical_table_type_jour.csv'))
+    except Exception as e:
+        flash(f'Une erreur est survenue: {e}', 'danger')
+        return redirect(url_for('main.index'))
+        
+@main.route('/type_jour')
+def type_jour():
+    try:
+        csv_path = os.path.join(current_app.config['UPLOAD_FOLDER_OUT'], 'bd_medical_table_type_jour.csv')
+        df = pd.read_csv(csv_path, sep=';', quotechar='"')
+        table_html = df.to_html(classes='table table-striped table-bordered', index=False)
+        return render_template('type_jour.html', table=table_html, 
+                               file_exists_type_patient=check_file_exists('bd_medical_table_type_patient.csv'), 
+                               file_exists_type_paiement=check_file_exists('bd_medical_table_type_paiement.csv'),
+                               file_exists_type_jour=True)
     except Exception as e:
         flash(f'Une erreur est survenue: {e}', 'danger')
         return redirect(url_for('main.index'))

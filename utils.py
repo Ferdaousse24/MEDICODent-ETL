@@ -21,21 +21,25 @@ def check_file_exists(filename):
     return os.path.exists(csv_path)
     
 def clear_tables():
-    """Vide les tables spécifiées dans la base de données."""
-    tables = [
-        'table_type_paiement',
-        'table_type_patient'
-    ]
+    """Exécute le script SQL pour recréer les tables spécifiées dans la base de données."""
+    script_path = os.path.join(os.path.dirname(__file__), 'sql', 'medicodentetl.sql')
     
+    with open(script_path, 'r') as file:
+        sql_script = file.read()
+
+    # Séparer les différentes commandes SQL
+    sql_commands = sql_script.split(';')
+
     with engine.connect() as conn:
         trans = conn.begin()
         try:
-            for table in tables:
-                conn.execute(text(f"DELETE FROM {table};"))
+            for command in sql_commands:
+                if command.strip():  # Ignorer les commandes vides
+                    conn.execute(text(command))
             trans.commit()
         except Exception as e:
             trans.rollback()
-            print(f"Error clearing tables: {e}")
+            print(f"Error executing script: {e}")
             raise
    
 def generate_type_patient_csv(filepath, output_dir):
@@ -57,6 +61,15 @@ def generate_type_paiement_csv(filepath, output_dir):
     df_paiement['type_paiement'] = df_paiement['type_paiement'].apply(lambda x: x.upper())
     output_csv_paiement = os.path.join(output_dir, 'bd_medical_table_type_paiement.csv')
     df_paiement.to_csv(output_csv_paiement, index=False, sep=';', quotechar='"', quoting=1)
+    
+def generate_type_jour_csv(output_dir):
+    data_jour = {
+        'id_jour': [1, 2, 3],
+        'type_jour': ['Travaille', 'Non Travaille', 'Férié']
+    }
+    df_jour = pd.DataFrame(data_jour)
+    output_csv_jour = os.path.join(output_dir, 'bd_medical_table_type_jour.csv')
+    df_jour.to_csv(output_csv_jour, index=False, sep=';', quotechar='"', quoting=1)
 
 def insert_csv_to_db(csv_file, table_name, column_mapping=None):
     """Insère les données d'un fichier CSV dans une table de la base de données."""
