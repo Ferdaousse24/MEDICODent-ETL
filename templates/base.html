@@ -28,6 +28,23 @@
         border: none;
         padding-left: 0;
       }
+      .scroll-to-top {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #007bff;
+        color: white;
+        border-radius: 50%;
+        padding: 10px;
+        font-size: 24px;
+        display: none;
+        z-index: 1000;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .scroll-to-top:hover {
+        background-color: #0056b3;
+      }
     </style>
   </head>
   <body>
@@ -85,7 +102,13 @@
       {% endwith %}
       {% block content %}{% endblock %}
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+    <!-- Scroll to top button -->
+    <a href="#" id="scrollToTopButton" class="scroll-to-top">
+      <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
@@ -93,6 +116,24 @@
       $('.custom-file-input').on('change', function() {
         var fileName = $(this).val().split('\\').pop();
         $(this).next('.custom-file-label').addClass("selected").html(fileName);
+      });
+
+      // Scroll to top functionality
+      $(document).ready(function() {
+        var scrollToTopButton = $('#scrollToTopButton');
+
+        $(window).scroll(function() {
+          if ($(window).scrollTop() > 300) {
+            scrollToTopButton.fadeIn();
+          } else {
+            scrollToTopButton.fadeOut();
+          }
+        });
+
+        scrollToTopButton.on('click', function(e) {
+          e.preventDefault();
+          $('html, body').animate({scrollTop: 0}, '300');
+        });
       });
     </script>
   </body>
