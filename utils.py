@@ -94,3 +94,22 @@ def generate_annee_csv(filepath, output_dir):
     df_annee = pd.DataFrame(data_annee)
     output_csv_annee = os.path.join(output_dir, 'bd_medical_table_t_annee.csv')
     df_annee.to_csv(output_csv_annee, index=False, sep=';', quotechar='"', quoting=1)
+    
+def generate_mois_csv(output_dir):
+    df_annee = pd.read_csv(os.path.join(output_dir, 'bd_medical_table_t_annee.csv'), sep=';', quotechar='"')
+    data_mois = {
+        'id_M': [],
+        'mois': [],
+        'id_A': []
+    }
+    id_M = 1
+    for i, year in enumerate(df_annee['id_A']):
+        for month in range(1, 13):
+            data_mois['id_M'].append(id_M)
+            data_mois['mois'].append(month)
+            data_mois['id_A'].append(year)
+            id_M += 1
+
+    df_mois = pd.DataFrame(data_mois)
+    output_csv_mois = os.path.join(output_dir, 'bd_medical_table_t_mois.csv')
+    df_mois.to_csv(output_csv_mois, index=False, sep=';', quotechar='"', quoting=1)

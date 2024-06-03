@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS `table_type_patient`;
 DROP TABLE IF EXISTS `table_type_paiement`;
 DROP TABLE IF EXISTS `table_type_jour`;
 DROP TABLE IF EXISTS `table_t_annee`;
+DROP TABLE IF EXISTS `table_t_mois`;
 
 -- --------------------------------------------------------
 
@@ -36,7 +37,6 @@ ALTER TABLE `table_type_paiement`
 --
 -- Structure de la table `table_type_jour`
 --
-
 CREATE TABLE `table_type_jour` (
   `id_t_jour` int(8) NOT NULL,
   `type_jour` varchar(20) NOT NULL
@@ -52,7 +52,7 @@ ALTER TABLE `table_type_jour`
 -- Structure de la table `table_type_annee`
 --
 CREATE TABLE `table_t_annee` (
-  `id_A` int(8) NOT NULL,
+  `id_A` int(4) NOT NULL,
   `annee` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -61,3 +61,25 @@ CREATE TABLE `table_t_annee` (
 --
 ALTER TABLE `table_t_annee`
   ADD PRIMARY KEY (`id_A`);
+
+--
+-- Structure de la table `table_t_mois`
+--
+CREATE TABLE `table_t_mois` (
+  `id_M` int(4) NOT NULL,
+  `mois` int(4) NOT NULL,
+  `id_A` int(4) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Index pour la table `table_t_mois`
+--
+ALTER TABLE `table_t_mois`
+  ADD PRIMARY KEY (`id_M`);
+  
+--
+-- Contraintes pour la table `table_t_mois`
+--
+ALTER TABLE `table_t_mois`
+  ADD CONSTRAINT `ContrainteFromAnnee` FOREIGN KEY (`id_A`) REFERENCES `table_t_annee` (`id_A`);
+
