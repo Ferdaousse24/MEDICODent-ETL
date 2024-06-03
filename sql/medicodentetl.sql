@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS `faits_patient`;
 DROP TABLE IF EXISTS `table_type_patient`;
 DROP TABLE IF EXISTS `table_type_paiement`;
 DROP TABLE IF EXISTS `table_t_date`;
@@ -123,3 +124,26 @@ ALTER TABLE `table_t_date`
   ADD CONSTRAINT `ContrainteFromMois` FOREIGN KEY (`id_M`) REFERENCES `table_t_mois` (`id_M`),
   ADD CONSTRAINT `ContrainteFromSemaine` FOREIGN KEY (`id_S`) REFERENCES `table_t_semaine` (`id_S`),
   ADD CONSTRAINT `ContrainteFromTypeJour` FOREIGN KEY (`id_t_jour`) REFERENCES `table_type_jour` (`id_t_jour`);
+ 
+--
+-- Structure de la table `faits_patient`
+--
+CREATE TABLE `faits_patient` (
+  `id_D` int(8) NOT NULL,
+  `id_patient` int(8) NOT NULL,
+  `nb_patient` int(8) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Index pour la table `faits_patient`
+--
+ALTER TABLE `faits_patient`
+  ADD KEY `ContrainteFromDate` (`id_D`),
+  ADD KEY `ContrainteFromTypePatient` (`id_patient`);
+  
+--
+-- Contraintes pour la table `faits_patient`
+--
+ALTER TABLE `faits_patient`
+  ADD CONSTRAINT `ContrainteFromDate` FOREIGN KEY (`id_D`) REFERENCES `table_t_date` (`id_D`),
+  ADD CONSTRAINT `ContrainteFromTypePatient` FOREIGN KEY (`id_patient`) REFERENCES `table_type_patient` (`id_patient`);
