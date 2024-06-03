@@ -42,6 +42,10 @@ Nous accueillons les contributions ! Veuillez suivre ces étapes :
 4. Pushez vers la branche (`git push origin feature/votre-fonctionnalite`).
 5. Créez une nouvelle Pull Request.
 
+## Commandes pour installer les bibliothèques
+
+`pip install Flask Werkzeug pandas SQLAlchemy`
+
 ## Commande pour lancer l'application
 
 `python app.py`
