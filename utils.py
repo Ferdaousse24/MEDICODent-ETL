@@ -132,3 +132,102 @@ def generate_semaine_csv(output_dir):
     df_semaine = pd.DataFrame(data_semaine)
     output_csv_semaine = os.path.join(output_dir, 'bd_medical_table_t_semaine.csv')
     df_semaine.to_csv(output_csv_semaine, index=False, sep=';', quotechar='"', quoting=1)
+    
+import os
+import pandas as pd
+from flask import current_app
+
+def generate_date_csv(filepath):
+    """Génère le tableau des dates et l'exporte en CSV."""
+    annee_df = pd.read_csv(os.path.join(current_app.config['UPLOAD_FOLDER_OUT'], 'bd_medical_table_t_annee.csv'), sep=';', quotechar='"')
+    mois_df = pd.read_csv(os.path.join(current_app.config['UPLOAD_FOLDER_OUT'], 'bd_medical_table_t_mois.csv'), sep=';', quotechar='"')
+    semaine_df = pd.read_csv(os.path.join(current_app.config['UPLOAD_FOLDER_OUT'], 'bd_medical_table_t_semaine.csv'), sep=';', quotechar='"')
+    jour_df = pd.read_csv(os.path.join(current_app.config['UPLOAD_FOLDER_OUT'], 'bd_medical_table_type_jour.csv'), sep=';', quotechar='"')
+
+    date_data = {
+        'id_D': [],
+        'date_R': [],
+        'jour': [],
+        'mois': [],
+        'annee': [],
+        'semaine': [],
+        'id_t_jour': [],
+        'id_M': [],
+        'id_S': []
+    }
+
+    error_data = {
+        'sheet_name': [],
+        'row_number': [],
+        'invalid_date': []
+    }
+
+    id_D = 1
+    last_date = pd.Timestamp.min
+    xls = pd.ExcelFile(filepath)
+
+    for _, annee_row in annee_df.iterrows():
+        year = annee_row['annee']
+        id_A = annee_row['id_A']
+        sheet_name = next(sheet for sheet in xls.sheet_names if str(year) in sheet)
+
+        df = pd.read_excel(filepath, sheet_name=sheet_name, header=None)
+        header_row = df.apply(lambda row: row.astype(str).str.contains('Date').any(), axis=1).idxmax()
+        df.columns = df.iloc[header_row]
+        df = df[header_row + 1:].reset_index(drop=True)
+
+        if 'Date' not in df.columns:
+            continue
+
+        for index, row in df.iterrows():
+            date = row['Date']
+            try:
+                current_date = pd.to_datetime(date, errors='coerce')
+                if pd.isna(current_date):
+                    continue
+
+                if current_date <= last_date:
+                    error_data['sheet_name'].append(sheet_name)
+                    error_data['row_number'].append(index + header_row + 2)  # +2 to account for header and 0-based index
+                    error_data['invalid_date'].append(date)
+                    continue
+
+                last_date = current_date
+
+                day = current_date.day
+                month = current_date.month
+                week_number = current_date.isocalendar()[1]
+                year = current_date.year
+
+                day_of_week = current_date.weekday() + 1
+                id_t_jour = jour_df[jour_df['type_jour'].str.contains('Travaille', case=False)]['id_jour'].values[0]
+
+                id_M = mois_df[(mois_df['mois'] == month) & (mois_df['id_A'] == id_A)]['id_M']
+                id_S = semaine_df[(semaine_df['semaine'] == week_number) & (semaine_df['id_A'] == id_A)]['id_S']
+
+                if id_M.empty or id_S.empty:
+                    continue
+
+                date_data['id_D'].append(f"{year}{str(id_D).zfill(4)}")
+                date_data['date_R'].append(current_date.strftime("%d/%m/%Y"))
+                date_data['jour'].append(day)
+                date_data['mois'].append(month)
+                date_data['annee'].append(year)
+                date_data['semaine'].append(week_number)
+                date_data['id_t_jour'].append(id_t_jour)
+                date_data['id_M'].append(id_M.values[0])
+                date_data['id_S'].append(id_S.values[0])
+
+                id_D += 1
+            except Exception as e:
+                print(f"Error processing date {date}: {e}")
+                continue
+
+    df_date = pd.DataFrame(date_data)
+    output_csv_date = os.path.join(current_app.config['UPLOAD_FOLDER_OUT'], 'bd_medical_table_t_date.csv')
+    df_date.to_csv(output_csv_date, index=False, sep=';', quotechar='"', quoting=1)
+
+    df_error = pd.DataFrame(error_data)
+    if not df_error.empty:
+        error_csv_path = os.path.join(current_app.config['UPLOAD_FOLDER_OUT'], 'date_errors.csv')
+        df_error.to_csv(error_csv_path, index=False, sep=';', quotechar='"', quoting=1)
