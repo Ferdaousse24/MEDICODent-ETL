@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import text
 import os
 import pandas as pd
+import re
 
 # Configuration de la base de données
 DATABASE_URI = 'mysql+pymysql://root:@localhost/medicodentetl'
@@ -77,3 +78,19 @@ def insert_csv_to_db(csv_file, table_name, column_mapping=None):
     if column_mapping:
         df = df.rename(columns=column_mapping)
     df.to_sql(table_name, con=engine, if_exists='append', index=False)
+    
+def generate_annee_csv(filepath, output_dir):
+    sheet_names = pd.ExcelFile(filepath).sheet_names
+    years = []
+    for sheet in sheet_names:
+        match = re.search(r'(19|20)\d{2}', sheet)
+        if match:
+            years.append(match.group(0))
+
+    data_annee = {
+        'id_A': list(range(17, 17 + len(years))),
+        'annee': years
+    }
+    df_annee = pd.DataFrame(data_annee)
+    output_csv_annee = os.path.join(output_dir, 'bd_medical_table_t_annee.csv')
+    df_annee.to_csv(output_csv_annee, index=False, sep=';', quotechar='"', quoting=1)

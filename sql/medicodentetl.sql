@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS `table_type_patient`;
 DROP TABLE IF EXISTS `table_type_paiement`;
 DROP TABLE IF EXISTS `table_type_jour`;
+DROP TABLE IF EXISTS `table_t_annee`;
 
 -- --------------------------------------------------------
 
@@ -46,3 +47,17 @@ CREATE TABLE `table_type_jour` (
 --
 ALTER TABLE `table_type_jour`
   ADD PRIMARY KEY (`id_t_jour`);
+
+--
+-- Structure de la table `table_type_annee`
+--
+CREATE TABLE `table_t_annee` (
+  `id_A` int(8) NOT NULL,
+  `annee` varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Index pour la table `table_type_annee`
+--
+ALTER TABLE `table_t_annee`
+  ADD PRIMARY KEY (`id_A`);
