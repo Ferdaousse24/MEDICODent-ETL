@@ -280,6 +280,76 @@ def generate_fait_patient_csv(filepath):
     output_csv_fait_patient = os.path.join(current_app.config['UPLOAD_FOLDER_OUT'], 'bd_medical_table_fait_patient.csv')
     df_fait_patient.to_csv(output_csv_fait_patient, index=False, sep=';', quotechar='"', quoting=1)
 
+def generate_fait_recettes_csv(filepath):
+    """Génère le tableau fait_recettes et l'exporte en CSV."""
+    # Lire le fichier de dates
+    date_df = pd.read_csv(os.path.join(current_app.config['UPLOAD_FOLDER_OUT'], 'bd_medical_table_t_date.csv'), sep=';', quotechar='"')
+    fait_recettes_data = {
+        'id_D': [],
+        'montant': [],
+        'id_paiement': []
+    }
+
+    # Lire les feuilles du fichier Excel
+    xls = pd.ExcelFile(filepath)
+    last_processed_date = None
+
+    for sheet_name in xls.sheet_names:
+        # Vérifier si le nom de la feuille contient une année
+        match = re.search(r'(19|20)\d{2}', sheet_name)
+        if not match:
+            continue
+
+        # Lire la feuille Excel
+        df = pd.read_excel(filepath, sheet_name=sheet_name, header=None)
+        header_row = df.apply(lambda row: row.astype(str).str.contains('Date').any(), axis=1).idxmax()
+        df.columns = df.iloc[header_row]
+        df = df[header_row + 1:]
+
+        if 'Date' not in df.columns:
+            continue
+
+        # Traiter chaque ligne du DataFrame
+        for index, row in df.iterrows():
+            try:
+                current_date = pd.to_datetime(row['Date'], errors='coerce')
+                if pd.isna(current_date):
+                    continue
+
+                # Vérifier si au moins une des colonnes contient une valeur de type double ou float
+                if any(isinstance(row[col], (float, int)) for col in ['Chèques', 'Virements', 'CB', 'Espèces'] if pd.notnull(row[col])):
+                    # Comparer la date actuelle avec la dernière date traitée
+                    if last_processed_date is None or current_date > last_processed_date:
+                        id_D_row = date_df[date_df['date_R'] == current_date.strftime("%d/%m/%Y")]
+                        if id_D_row.empty:
+                            continue
+
+                        id_D = id_D_row['id_D'].values[0]
+
+                        # Ajouter les montants et les types de paiements
+                        paiements = {'Chèques': 1, 'Virements': 2, 'CB': 3, 'Espèces': 4}
+                        for paiement, id_paiement in paiements.items():
+                            montant = row[paiement] if pd.notnull(row[paiement]) else 0
+                            fait_recettes_data['id_D'].append(id_D)
+                            fait_recettes_data['montant'].append(montant)
+                            fait_recettes_data['id_paiement'].append(id_paiement)
+                        
+                        # Mettre à jour la dernière date traitée
+                        last_processed_date = current_date
+            except Exception as e:
+                print(f"Error processing row {index}: {e}")
+                continue
+
+    # Convertir les données en DataFrame
+    df_fait_recettes = pd.DataFrame(fait_recettes_data)
+
+    # Trier les données par id_D et id_paiement
+    df_fait_recettes = df_fait_recettes.sort_values(by=['id_D', 'id_paiement'])
+
+    # Enregistrer les données triées dans un fichier CSV
+    output_csv_fait_recettes = os.path.join(current_app.config['UPLOAD_FOLDER_OUT'], 'bd_medical_table_fait_recettes.csv')
+    df_fait_recettes.to_csv(output_csv_fait_recettes, index=False, sep=';', quotechar='"', quoting=1)
+
 def insert_csv_to_db(csv_file, table_name, column_mapping=None):
     """Insère les données d'un fichier CSV dans une table de la base de données."""
     df = pd.read_csv(csv_file, sep=';', quotechar='"')

@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS `faits_recettes`;
 DROP TABLE IF EXISTS `faits_patient`;
 DROP TABLE IF EXISTS `table_type_patient`;
 DROP TABLE IF EXISTS `table_type_paiement`;
@@ -147,3 +148,26 @@ ALTER TABLE `faits_patient`
 ALTER TABLE `faits_patient`
   ADD CONSTRAINT `ContrainteFromDate` FOREIGN KEY (`id_D`) REFERENCES `table_t_date` (`id_D`),
   ADD CONSTRAINT `ContrainteFromTypePatient` FOREIGN KEY (`id_patient`) REFERENCES `table_type_patient` (`id_patient`);
+  
+--
+-- Structure de la table `faits_recettes`
+--
+CREATE TABLE `faits_recettes` (
+  `id_D` int(8) NOT NULL,
+  `id_paiement` int(8) NOT NULL,
+  `montant` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Index pour la table `faits_recettes`
+--
+ALTER TABLE `faits_recettes`
+  ADD KEY `ContrainteFromTypePaiement` (`id_paiement`),
+  ADD KEY `ContrainteFromIDDate` (`id_D`);
+  
+--
+-- Contraintes pour la table `faits_recettes`
+--
+ALTER TABLE `faits_recettes`
+  ADD CONSTRAINT `ContrainteFromIDDate` FOREIGN KEY (`id_D`) REFERENCES `table_t_date` (`id_D`),
+  ADD CONSTRAINT `ContrainteFromTypePaiement` FOREIGN KEY (`id_paiement`) REFERENCES `table_type_paiement` (`id_paiement`);

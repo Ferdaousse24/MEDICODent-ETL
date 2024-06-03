@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Fait Recettes{% endblock %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center">
+    <h1>Fait Recettes</h1>
+    <a href="{{ url_for('main.download_file', filename='bd_medical_table_fait_recettes.csv') }}" class="btn btn-primary">
+      <i class="fa fa-download"></i> Télécharger CSV
+    </a>
+  </div>
+  {{ table|safe }}
+{% endblock %}

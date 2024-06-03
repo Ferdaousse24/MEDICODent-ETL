@@ -65,6 +65,9 @@
           <li class="nav-item">
             <a class="nav-link {% if request.path == '/fait_patient' %}active{% endif %} {% if not file_exists_fait_patient %}disabled{% endif %}" href="{% if file_exists_fait_patient %}{{ url_for('main.fait_patient') }}{% else %}#{% endif %}">Fait Patient</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.path == '/fait_recettes' %}active{% endif %} {% if not file_exists_fait_recettes %}disabled{% endif %}" href="{% if file_exists_fait_recettes %}{{ url_for('main.fait_recettes') }}{% else %}#{% endif %}">Fait Recettes</a>
+          </li>
         </ul>
       </div>
     </nav>
