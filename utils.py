@@ -21,27 +21,22 @@ def check_file_exists(filename):
     return os.path.exists(csv_path)
     
 def clear_tables():
-    """Exécute le script SQL pour recréer les tables spécifiées dans la base de données."""
-    script_path = os.path.join(os.path.dirname(__file__), 'sql', 'medicodentetl.sql')
+    """Vide les tables spécifiées dans la base de données."""
+    tables = [
+        'table_type_paiement',
+        'table_type_patient'
+    ]
     
-    with open(script_path, 'r') as file:
-        sql_script = file.read()
-
-    # Séparer les différentes commandes SQL
-    sql_commands = sql_script.split(';')
-
     with engine.connect() as conn:
         trans = conn.begin()
         try:
-            for command in sql_commands:
-                if command.strip():  # Ignorer les commandes vides
-                    conn.execute(text(command))
+            for table in tables:
+                conn.execute(text(f"DELETE FROM {table};"))
             trans.commit()
         except Exception as e:
             trans.rollback()
-            print(f"Error executing script: {e}")
+            print(f"Error clearing tables: {e}")
             raise
-
    
 def generate_type_patient_csv(filepath, output_dir):
     # Lire la feuille "Type_Patient" du fichier Excel
@@ -56,6 +51,13 @@ def generate_type_patient_csv(filepath, output_dir):
     output_csv_patient = os.path.join(output_dir, 'bd_medical_table_type_patient.csv')
     df_patient.to_csv(output_csv_patient, index=False, sep=';', quotechar='"', quoting=1)
    
+def generate_type_paiement_csv(filepath, output_dir):
+    df_paiement = pd.read_excel(filepath, sheet_name='Type_Paiement')
+    df_paiement.columns = ['id_paiement', 'type_paiement']
+    df_paiement['type_paiement'] = df_paiement['type_paiement'].apply(lambda x: x.upper())
+    output_csv_paiement = os.path.join(output_dir, 'bd_medical_table_type_paiement.csv')
+    df_paiement.to_csv(output_csv_paiement, index=False, sep=';', quotechar='"', quoting=1)
+
 def insert_csv_to_db(csv_file, table_name, column_mapping=None):
     """Insère les données d'un fichier CSV dans une table de la base de données."""
     df = pd.read_csv(csv_file, sep=';', quotechar='"')
