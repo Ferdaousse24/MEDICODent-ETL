@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from werkzeug.utils import secure_filename
 import os
 from utils import (allowed_file, check_file_exists, generate_type_patient_csv, clear_tables, insert_csv_to_db, generate_type_paiement_csv, generate_type_jour_csv,
-generate_annee_csv, generate_mois_csv)
+generate_annee_csv, generate_mois_csv, generate_semaine_csv)
 import pandas as pd
 
 
@@ -15,12 +15,14 @@ def index():
     file_exists_type_jour = check_file_exists('bd_medical_table_type_jour.csv')
     file_exists_t_annee = check_file_exists('bd_medical_table_t_annee.csv')
     file_exists_t_mois=check_file_exists('bd_medical_table_t_mois.csv')
+    file_exists_t_semaine = check_file_exists('bd_medical_table_t_semaine.csv')
     return render_template('index.html', 
                            file_exists_type_patient=file_exists_type_patient, 
                            file_exists_type_paiement=file_exists_type_paiement,
                            file_exists_type_jour=file_exists_type_jour,
                            file_exists_t_annee=file_exists_t_annee,
-                           file_exists_t_mois=file_exists_t_mois)
+                           file_exists_t_mois=file_exists_t_mois,
+                           file_exists_t_semaine=file_exists_t_semaine)
 
 @main.route('/upload', methods=['GET', 'POST'])
 def upload_file():
@@ -49,6 +51,7 @@ def upload_file():
                 generate_type_jour_csv(current_app.config['UPLOAD_FOLDER_OUT'])
                 generate_annee_csv(filepath, current_app.config['UPLOAD_FOLDER_OUT'])
                 generate_mois_csv(current_app.config['UPLOAD_FOLDER_OUT'])
+                generate_semaine_csv(current_app.config['UPLOAD_FOLDER_OUT'])
                 
                 # Vider les tables avant de charger les nouvelles données
                 clear_tables()
@@ -59,6 +62,7 @@ def upload_file():
                 insert_csv_to_db(os.path.join(current_app.config['UPLOAD_FOLDER_OUT'], 'bd_medical_table_type_jour.csv'), 'table_type_jour', column_mapping={'id_jour': 'id_t_jour'})
                 insert_csv_to_db(os.path.join(current_app.config['UPLOAD_FOLDER_OUT'], 'bd_medical_table_t_annee.csv'), 'table_t_annee')
                 insert_csv_to_db(os.path.join(current_app.config['UPLOAD_FOLDER_OUT'], 'bd_medical_table_t_mois.csv'), 'table_t_mois')
+                insert_csv_to_db(os.path.join(current_app.config['UPLOAD_FOLDER_OUT'], 'bd_medical_table_t_semaine.csv'), 'table_t_semaine')
                 
                 # Message de réussite
                 flash('Fichiers téléchargés avec succès, CSV générés et données insérées dans la base de données')
@@ -77,12 +81,14 @@ def upload_file():
     file_exists_type_jour = check_file_exists('bd_medical_table_type_jour.csv')
     file_exists_t_annee = check_file_exists('bd_medical_table_t_annee.csv')
     file_exists_t_mois=check_file_exists('bd_medical_table_t_mois.csv')
+    file_exists_t_semaine = check_file_exists('bd_medical_table_t_semaine.csv')
     return render_template('upload.html', 
                            file_exists_type_patient=file_exists_type_patient, 
                            file_exists_type_paiement=file_exists_type_paiement,
                            file_exists_type_jour=file_exists_type_jour,
                            file_exists_t_annee=file_exists_t_annee,
-                           file_exists_t_mois=file_exists_t_mois)
+                           file_exists_t_mois=file_exists_t_mois,
+                           file_exists_t_semaine=file_exists_t_semaine)
                           
 @main.route('/download/<filename>')
 def download_file(filename):
@@ -164,6 +170,23 @@ def type_mois():
                                file_exists_type_jour=check_file_exists('bd_medical_table_type_jour.csv'),
                                file_exists_t_annee=check_file_exists('bd_medical_table_t_annee.csv'),
                                file_exists_t_mois=True)
+    except Exception as e:
+        flash(f'Une erreur est survenue: {e}', 'danger')
+        return redirect(url_for('main.index'))
+
+@main.route('/type_semaine')
+def type_semaine():
+    try:
+        csv_path = os.path.join(current_app.config['UPLOAD_FOLDER_OUT'], 'bd_medical_table_t_semaine.csv')
+        df = pd.read_csv(csv_path, sep=';', quotechar='"')
+        table_html = df.to_html(classes='table table-striped table-bordered', index=False)
+        return render_template('type_semaine.html', table=table_html, 
+                               file_exists_type_patient=check_file_exists('bd_medical_table_type_patient.csv'), 
+                               file_exists_type_paiement=check_file_exists('bd_medical_table_type_paiement.csv'),
+                               file_exists_type_jour=check_file_exists('bd_medical_table_type_jour.csv'),
+                               file_exists_t_annee=check_file_exists('bd_medical_table_t_annee.csv'),
+                               file_exists_t_mois=check_file_exists('bd_medical_table_t_mois.csv'),
+                               file_exists_t_semaine=True)
     except Exception as e:
         flash(f'Une erreur est survenue: {e}', 'danger')
         return redirect(url_for('main.index'))

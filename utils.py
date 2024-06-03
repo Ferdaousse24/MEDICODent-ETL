@@ -113,3 +113,22 @@ def generate_mois_csv(output_dir):
     df_mois = pd.DataFrame(data_mois)
     output_csv_mois = os.path.join(output_dir, 'bd_medical_table_t_mois.csv')
     df_mois.to_csv(output_csv_mois, index=False, sep=';', quotechar='"', quoting=1)
+
+def generate_semaine_csv(output_dir):
+    df_annee = pd.read_csv(os.path.join(output_dir, 'bd_medical_table_t_annee.csv'), sep=';', quotechar='"')
+    data_semaine = {
+        'id_S': [],
+        'semaine': [],
+        'id_A': []
+    }
+    id_S = 1
+    for i, year in enumerate(df_annee['id_A']):
+        for week in range(1, 53):
+            data_semaine['id_S'].append(id_S)
+            data_semaine['semaine'].append(week)
+            data_semaine['id_A'].append(year)
+            id_S += 1
+
+    df_semaine = pd.DataFrame(data_semaine)
+    output_csv_semaine = os.path.join(output_dir, 'bd_medical_table_t_semaine.csv')
+    df_semaine.to_csv(output_csv_semaine, index=False, sep=';', quotechar='"', quoting=1)
