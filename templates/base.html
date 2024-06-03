@@ -59,6 +59,9 @@
           <li class="nav-item">
             <a class="nav-link {% if request.path == '/type_semaine' %}active{% endif %} {% if not file_exists_t_semaine %}disabled{% endif %}" href="{% if file_exists_t_semaine %}{{ url_for('main.type_semaine') }}{% else %}#{% endif %}">Type Semaine</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.path == '/type_date' %}active{% endif %} {% if not file_exists_t_date %}disabled{% endif %}" href="{% if file_exists_t_date %}{{ url_for('main.type_date') }}{% else %}#{% endif %}">Type Date</a>
+          </li>
         </ul>
       </div>
     </nav>
