@@ -47,6 +47,9 @@
           <li class="nav-item">
             <a class="nav-link {% if request.path == '/type_paiement' %}active{% endif %} {% if not file_exists_type_paiement %}disabled{% endif %}" href="{% if file_exists_type_paiement %}{{ url_for('main.type_paiement') }}{% else %}#{% endif %}">Type Paiement</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.path == '/type_jour' %}active{% endif %} {% if not file_exists_type_jour %}disabled{% endif %}" href="{% if file_exists_type_jour %}{{ url_for('main.type_jour') }}{% else %}#{% endif %}">Type Jour</a>
+          </li>
         </ul>
       </div>
     </nav>
