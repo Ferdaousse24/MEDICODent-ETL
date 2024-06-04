@@ -1,5 +1,6 @@
 # MEDICODent-ETL
 Portail de Gestion des Données d'une Clinique Dentaire
+
 ## Aperçu
 
 Ce projet fait partie de notre programme de Master en Informatique à l'Université Lyon 2 pour le module SI SI Décisionnels. 
@@ -32,6 +33,40 @@ Cette étude de cas concerne les données financières et patientelles d'un cabi
 - **Génération de CSV :** Générer et télécharger des fichiers CSV à partir des données traitées.
 - **Chargement des données :** Charger les données traitées dans le datamart MySQL.
 - **Validation des données :** Vérifier la cohérence et l'exactitude des données par rapport aux données de terrain fournies.
+
+## Règles Métier pour la Génération des Fichiers CSV
+
+### 1. Type Patient
+- **Transformation :** Les valeurs de la colonne `type_patient` sont converties en majuscules.
+- **Remplacement :** Les valeurs 'SANS CMU' sont remplacées par 'NON_CMU'.
+
+### 2. Type Paiement
+- **Transformation :** Les valeurs de la colonne `type_paiement` sont converties en majuscules.
+
+### 3. Type Jour
+- **Données Statique :** Trois types de jours sont définis: 'Travaille', 'Non Travaille', 'Férié'.
+
+### 4. Année
+- **Extraction :** Les noms de feuilles contenant des années (ex. 2017, 2018) sont identifiés.
+- **Génération :** Un identifiant unique `id_A` est attribué à chaque année.
+
+### 5. Mois
+- **Génération :** Pour chaque année, douze entrées (une pour chaque mois) sont générées avec un identifiant unique `id_M`.
+
+### 6. Semaine
+- **Génération :** Pour chaque année, cinquante-deux semaines sont générées avec un identifiant unique `id_S`.
+
+### 7. Date
+- **Vérification :** Les dates sont vérifiées et invalides sont enregistrées dans un fichier d'erreurs.
+- **Génération :** Pour chaque date valide, un identifiant unique `id_D` est généré. Les informations de jour, mois, année, semaine, id_t_jour, id_M, et id_S sont associées.
+
+### 8. Fait Patient
+- **Calcul :** Les patients non-CMU et CMU sont comptés séparément.
+- **Association :** Chaque enregistrement est associé à un identifiant de date `id_D`.
+
+### 9. Fait Recettes
+- **Vérification :** Les lignes contenant des valeurs numériques pour les paiements sont traitées.
+- **Association :** Chaque enregistrement est associé à un identifiant de date `id_D`.
 
 ## Directives de Contribution
 
