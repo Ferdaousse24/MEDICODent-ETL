@@ -5,7 +5,9 @@ Portail de Gestion des Données d'une Clinique Dentaire
 
 Ce projet fait partie de notre programme de Master en Informatique à l'Université Lyon 2 pour le module SI SI Décisionnels. 
 L'objectif de ce projet est de développer un portail web offrant des fonctionnalités ETL (Extraction, Transformation, Chargement) pour traiter les données à partir d'un fichier XLS, générer des fichiers CSV, puis charger les données dans un datamart. 
-Cette étude de cas concerne les données financières et patientelles d'un cabinet dentaire sur une période de sept ans, avec une attention particulière à l'activité de radiographie panoramique.
+Cette étude de cas concerne les données financières et patientelles d'un cabinet dentaire sur une période de sept ans.
+
+![Scénarios](static/image.png)
 
 ## Schéma de la Base de Données
 
