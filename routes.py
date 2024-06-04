@@ -78,7 +78,7 @@ def upload_file():
                 
                 
                 # Message de réussite
-                flash('Fichiers téléchargés avec succès, CSV générés et données insérées dans la base de données')
+                flash('Fichiers téléchargés avec succès, CSV générés et données insérées dans la base de données', 'success')
             except Exception as e:
                 flash(f'Une erreur est survenue: {e}', 'danger')
                 return redirect(request.url)
