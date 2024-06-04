@@ -7,6 +7,12 @@ Ce projet fait partie de notre programme de Master en Informatique à l'Universi
 L'objectif de ce projet est de développer un portail web offrant des fonctionnalités ETL (Extraction, Transformation, Chargement) pour traiter les données à partir d'un fichier XLS, générer des fichiers CSV, puis charger les données dans un datamart. 
 Cette étude de cas concerne les données financières et patientelles d'un cabinet dentaire sur une période de sept ans, avec une attention particulière à l'activité de radiographie panoramique.
 
+## Schéma de la Base de Données
+
+Voici le schéma de la base de données utilisé dans ce projet :
+
+![Schéma de la base de données](static/Concepteur.png)
+
 ## Structure du Projet
 
 1. **Processus ETL**
